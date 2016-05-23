@@ -17,6 +17,8 @@ Reference Architectures
 
 [Streaming ETL](./streaming-etl/README.md)
 ------------------------------------------
+[Data Pipelines](./data-pipelines/README.md)
+------------------------------------------
 
 
 
