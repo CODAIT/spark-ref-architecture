@@ -1,11 +1,10 @@
 This document summarizes several architectures designed for training Deep Learning models on top of Spark developed at Arimo.
 
 By:
-
-  Christopher Nguyen
-  Christopher Smith
-  Ushnish De
-  Vu Pham
+* Christopher Nguyen
+* Christopher Smith
+* Ushnish De
+* Vu Pham
 
 
 # 1. Introduction
