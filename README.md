@@ -19,7 +19,8 @@ Reference Architectures
 ------------------------------------------
 [Data Pipelines](./data-pipelines/README.md)
 ------------------------------------------
-
+[Deep Learning](./deep-learning/arimo/README.md)
+------------------------------------------
 
 
 <br/><br/><br/>
