@@ -1,5 +1,5 @@
-Apache Spark Reference Architecture
-===================================
+Reference Architectures for Apache Spark
+========================================
 
 This repository is intended as a collaboration place around Apache Spark Reference Architectures.
 These Reference Architectures serves as a blueprint for composing capabilities for data, workload,
