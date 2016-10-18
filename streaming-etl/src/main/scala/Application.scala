@@ -17,7 +17,7 @@ import java.io.{PrintWriter, StringWriter}
 
 import org.apache.spark._
 import org.apache.spark.rdd.RDD
-import org.apache.spark.sql.SQLContext
+import org.apache.spark.sql.SparkSession
 import org.apache.spark.streaming._
 
 
@@ -28,7 +28,7 @@ object Application {
 
     val sparkConf = new SparkConf().setAppName("Spark-Streaming")
     val sparkContext = new SparkContext(sparkConf)
-    val sqlContext = new SQLContext(sparkContext)
+    val sparkSession = SparkSession.builder.config(sparkConf).getOrCreate()
     val streamingContext = new StreamingContext(sparkContext, Seconds(5))
 
     println("Will start processing the file")
@@ -48,7 +48,7 @@ object Application {
       if(! rdd.isEmpty()) {
         println("Processing RDD -> ")
 
-        val df = sqlContext.read.json(rdd)
+        val df = sparkSession.read.json(rdd)
           .selectExpr(
             s"'id' as tweet_id",
             s"'actor.id' as user_id",

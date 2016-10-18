@@ -30,16 +30,16 @@ libraryDependencies += "org.slf4j" % "slf4j-api" % "1.7.12"
 // Spark dependencies
 /* Do not remove "provided" - We do not need to include spark dependency
 on the jar because the jar is gonna be executed by spark-submit*/
-libraryDependencies += ("org.apache.spark"  %% "spark-streaming-kafka"  % "1.6.1").exclude("org.spark-project.spark", "unused")
+libraryDependencies += ("org.apache.spark"  %% "spark-streaming-kafka-0-10"  % "2.0.1").exclude("org.spark-project.spark", "unused")
 
-libraryDependencies += "org.apache.spark"  %% "spark-core"             % "1.6.1"  % "provided"
-libraryDependencies += "org.apache.spark"  %% "spark-streaming"        % "1.6.1"  % "provided"
-libraryDependencies += "org.apache.spark"  %% "spark-sql"              % "1.6.1"  % "provided"
-libraryDependencies += "org.apache.spark"  %% "spark-repl"             % "1.6.1"  % "provided"
-libraryDependencies += "org.apache.spark"  %% "spark-hive"             % "1.6.1"  % "provided"
+libraryDependencies += "org.apache.spark"  %% "spark-core"             % "2.0.1"  % "provided"
+libraryDependencies += "org.apache.spark"  %% "spark-streaming"        % "2.0.1"  % "provided"
+libraryDependencies += "org.apache.spark"  %% "spark-sql"              % "2.0.1"  % "provided"
+libraryDependencies += "org.apache.spark"  %% "spark-repl"             % "2.0.1"  % "provided"
+libraryDependencies += "org.apache.spark"  %% "spark-hive"             % "2.0.1"  % "provided"
 
 libraryDependencies ++= Seq(
-  "org.apache.kafka" %% "kafka" % "0.8.1"
+  "org.apache.kafka" %% "kafka" % "0.10.0.1"
     exclude("javax.jms", "jms")
     exclude("com.sun.jdmk", "jmxtools")
     exclude("com.sun.jmx", "jmxri")
