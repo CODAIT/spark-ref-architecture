@@ -19,6 +19,7 @@ import org.apache.spark._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.types.{Metadata, DataType, StructType}
+import org.apache.spark.sql.functions._
 import org.apache.spark.streaming._
 
 
@@ -69,6 +70,13 @@ object Application {
         df.printSchema()
 
         df.groupBy("source").count().show()
+
+	df.select(col("id").as("tweet_id"), col("actor.preferredUsername").as("user"), col("body"))
+	  .filter("isnotnull(tweet_id)")
+	  .write
+	  .format("org.apache.spark.sql.cassandra")
+	  .options( Map("keyspace" -> "test_rep_1", "table" -> "tweets") )
+	  .save
 
       }
 
