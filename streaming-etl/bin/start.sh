@@ -2,11 +2,11 @@
 
 ps aux |grep "spark-streaming-etl" | tr -s " " |  cut -d " " -f 2 | xargs kill >/dev/null 2>&1
 
-sbt clean compile package assembly
+#sbt clean compile package assembly
 
 # using environment variable to find Spark & Hadoop home directory
 if [ -z "$SPARK_HOME" ]; then echo "SPARK_HOME is NOT set"; else echo "SPARK_HOME defined as '$SPARK_HOME'"; fi
-if [ -z "$HADOOP_HOME" ]; then echo "$HADOOP_HOME is NOT set"; else echo "HADOOP_HOME defined as '$HADOOP_HOME'"; fi
+if [ -z "$HADOOP_HOME" ]; then echo "HADOOP_HOME is NOT set"; else echo "HADOOP_HOME defined as '$HADOOP_HOME'"; fi
 
 # hadoop fs -rm hdfs://localhost:9000/user/twitter/decahose/*
 
@@ -23,7 +23,7 @@ fi
 
 if [ "$1" = "stream" ]
 then
-  nohup $SPARK_HOME/bin/spark-submit --master spark://$HOSTNAME:7077 --num-executors 3 --class KafkaApplication ./target/scala-2.10/spark-stream.jar >> ./target/spark-stream.out &
+  nohup $SPARK_HOME/bin/spark-submit --master spark://rr-ram11:7080 --num-executors 4 --executor-memory 10G --class Application --conf spark.streaming.fileStream.minRememberDuration=600s --conf spark.sql.warehouse.dir=/refapp/warehouse ./target/scala-2.11/spark-application.jar hdfs://rr-dense1/refapp/decahose1 decahose-schema.js >> ./target/nohup-spark-stream.out &
 fi
 
 

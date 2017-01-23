@@ -18,37 +18,48 @@ import java.io.{PrintWriter, StringWriter}
 import org.apache.spark._
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.types.{Metadata, DataType, StructType}
+import org.apache.spark.sql.functions._
 import org.apache.spark.streaming._
 
 
 object Application {
   def main(args: Array[String]): Unit = {
+  
+    val log = org.apache.log4j.LogManager.getLogger(Application.getClass)
 
-    println("Starting Streaming Application")
+    log.info("Starting Streaming Application")
 
     val sparkConf = new SparkConf().setAppName("Spark-Streaming")
     val sparkContext = new SparkContext(sparkConf)
     val sparkSession = SparkSession.builder.config(sparkConf).getOrCreate()
     val streamingContext = new StreamingContext(sparkContext, Seconds(5))
 
-    println("Will start processing the file")
+    log.info("Will start processing the file")
 
     //val dDataStream = streamingContext.fileStream("hdfs://localhost:9000/user/twitter/decahose/2015_10_07_23_50_activity.json.gz")
     // val dDataStream = streamingContext.textFileStream("hdfs://redrock.softlayer.com:9000/redrock/decahose/")
-    val dDataStream = streamingContext.textFileStream("hdfs://redrock.softlayer.com:9000/streaming/joins/")
+//    val dDataStream = streamingContext.textFileStream("hdfs://redrock.softlayer.com:9000/streaming/joins/")
+    val dDataStream = streamingContext.textFileStream(args(0))
+    
+    // Here we load the schema for the json files TO AVOID going through schema inference which generates extra shuffles!!!
+    val fis = new java.io.FileInputStream(args(1))
+    val lines = scala.io.Source.fromInputStream(fis).getLines.mkString("")
+    val schema = DataType.fromJson(lines).asInstanceOf[StructType]
+    fis.close()
 
-    val dRulesStream = streamingContext.textFileStream("hdfs://redrock.softlayer.com:9000/streaming/rules/")
+//    val dRulesStream = streamingContext.textFileStream("hdfs://redrock.softlayer.com:9000/streaming/rules/")
 
-    println("Will start processing each record")
+    log.info("Will start processing each record")
 
     dDataStream.foreachRDD { rdd =>
 
       //rdd.foreach(record => println("### " + record + " ###"))
 
       if(! rdd.isEmpty()) {
-        println("Processing RDD -> ")
+        log.info("Processing RDD -> \n" + rdd.toDebugString)
 
-        val df = sparkSession.read.json(rdd)
+        val df = sparkSession.read.schema(schema).json(rdd)
           .selectExpr(
             s"'id' as tweet_id",
             s"'actor.id' as user_id",
@@ -59,6 +70,13 @@ object Application {
         df.printSchema()
 
         df.groupBy("source").count().show()
+
+	df.select(col("id").as("tweet_id"), col("actor.preferredUsername").as("user"), col("body"))
+	  .filter("isnotnull(tweet_id)")
+	  .write
+	  .format("org.apache.spark.sql.cassandra")
+	  .options( Map("keyspace" -> "test_rep_1", "table" -> "tweets") )
+	  .save
 
       }
 
@@ -97,7 +115,7 @@ object Application {
     streamingContext.start();
     streamingContext.awaitTermination();
 
-    println("Ending Streaming Application")
+    log.info("Ending Streaming Application")
 
   }
 
